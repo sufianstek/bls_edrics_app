@@ -37,6 +37,8 @@ root = tk.Tk()
 root.title("BLS Edrics scraper-eCert")
 
 appwidth=700
+nameheight=325
+dateheight=650
 
 canvas1 = tk.Canvas(root, width=appwidth, height=600, bg='lightsteelblue')
 canvas1.pack()
@@ -215,16 +217,18 @@ def autoCert():
             draw = ImageDraw.Draw(image)
             font = ImageFont.truetype('Cinzel-Bold.otf', size=60)
             color = 'rgb(0, 0, 0)'
-            name = df['Name'][i]
+            name = df['NAMA'][i]
             name = name.upper()
             name = name.replace('/', '')
             print(i+1, name)
             w, h = draw.textsize(name, font=font)
-            draw.text(((image.width - w)/2, 530), name, fill=color, font=font)
+            draw.text(((image.width - w)/2, nameheight), name, fill=color, font=font)
             imageName = "certs/"+name+".pdf"
             image.save(imageName)
             time.sleep(1)
 
+            ######################## email function ###########################
+            '''
             toaddr = df['Email'][i]
             msg = MIMEMultipart()
             msg['From'] = fromaddr
@@ -275,10 +279,10 @@ def autoCert():
             # sending the mail
             s.sendmail(fromaddr, toaddr, text)
             time.sleep(1)
-
+            '''
             # terminating the session
 
-        s.quit()
+        #s.quit()
         print("PROCESS COMPLETED")
         input()
     #except smtplib.SMTPAuthenticationError:
@@ -328,7 +332,7 @@ def createCert():
     font = ImageFont.truetype('Cinzel-Bold.otf', size=60)
     color = 'rgb(0, 0, 0)'
     w, h = draw.textsize(myvar.get(), font=font)
-    draw.text(((image.width - w)/2, 530), myvar.get(), fill=color, font=font)
+    draw.text(((image.width - w)/2, nameheight), myvar.get(), fill=color, font=font)
     imageName1 = myvar.get() + ".png"
     image.save(imageName1)
 
@@ -336,13 +340,13 @@ def createCert():
 def changeTemplate():
     image = Image.open("raw.jpg")
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('Cinzel-Bold.otf', size=60)
+    font = ImageFont.truetype('Cinzel-Bold.otf', size=50)
     color = 'rgb(0, 0, 0)'
     w, h = draw.textsize(coursevar.get(), font=font)
     x, h = draw.textsize(datevar.get(), font=font)
     draw.text(((image.width - w)/2, 735),
               coursevar.get(), fill=color, font=font)
-    draw.text(((image.width - x)/2, 945), datevar.get(), fill=color, font=font)
+    draw.text(((image.width - x)/2, dateheight), datevar.get(), fill=color, font=font)
     imageName2 = "template.jpg"
     image.save(imageName2)
 
@@ -392,7 +396,7 @@ def openNewWindow():
 
 def excelName():
     try:
-        if "Name" in df:
+        if "NAMA" in df:
             excel_var.set('Excel file Loaded')
         else:
             excel_var.set('Excel file not found. Please select excel file')
@@ -402,7 +406,7 @@ def excelName():
 
 
 def test1():
-    if "Name" in df:
+    if "NAMA" in df:
         name_var.set('Name column check')
     else:
         name_var.set('Name column not present')
@@ -553,7 +557,7 @@ email_label = tk.Label(textvariable=email_var, bg='lightsteelblue',
 email_l = canvas1.create_window(appwidth/2, 470, window=email_label)
 
 
-runButton = tk.Button(text='Final step:    Run AutoCert', command=autoCert,
+runButton = tk.Button(text='Generate and send email', command=autoCert,
                       bg='maroon', fg='white', font=('helvetica', 12, 'bold'), width=25)
 run_autocert = canvas1.create_window(appwidth/2, 500, window=runButton)
 
